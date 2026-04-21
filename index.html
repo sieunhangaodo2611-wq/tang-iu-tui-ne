@@ -10,11 +10,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle, #1a1a2e, #000);
+            /* Thay nền đen bằng hình ảnh hoa anh đào lãng mạn */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                            url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=2076&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
             perspective: 1200px;
             overflow: hidden;
             font-family: 'Segoe UI', Arial, sans-serif;
-        }
+}
 
         #heartCanvas {
             position: fixed;
@@ -53,6 +59,25 @@
         .overlay-card h2 { margin-bottom: 20px; font-size: 22px; color: #d63384; }
         .overlay-card p { margin-bottom: 25px; color: #666; font-style: italic; }
 
+        #birthdayInput {
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #ff6b81;
+            outline: none;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 15px;
+            width: 80%;
+            font-family: inherit;
+        }
+        #error-msg {
+            color: #ff4757;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+            font-weight: bold;
+        }
+
         .btn-music {
             padding: 12px 35px;
             margin: 0 10px;
@@ -65,10 +90,8 @@
         }
 
         .btn-yes { background: linear-gradient(45deg, #ff4757, #ff6b81); color: white; }
-        .btn-no { background-color: #f1f2f6; color: #2f3542; }
         .btn-music:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-        /* Container quả cầu */
         .globe-container {
             position: relative;
             width: 300px;
@@ -79,19 +102,17 @@
             z-index: 2;
         }
 
-        /* --- PHẦN CHỈNH SỬA TRÁI ĐẤT --- */
-        .earth {
+        /* --- PHẦN CHỈNH SỬA TRÁI TIM TO CHÍNH GIỮA --- */
+        .main-heart {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            /* Sử dụng link ảnh trái đất mới ổn định hơn */
-            background: url('https://api.vniit.com/images/earth_3d.png'), url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png');
-            background-size: cover;
-            background-position: center;
-            /* Hiệu ứng đổ bóng làm trái đất trông thật hơn */
-            box-shadow: inset -20px -20px 50px rgba(0,0,0,0.8), 0 0 50px rgba(70, 130, 180, 0.5);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 180px; /* Độ to của trái tim */
+            color: #ff4757;
+            text-shadow: 0 0 30px rgba(255, 71, 87, 0.6);
             z-index: 1;
+            user-select: none;
         }
 
         .photo {
@@ -106,7 +127,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.6);
             object-fit: cover;
             border-radius: 5px;
-            z-index: 10; /* Đảm bảo ảnh luôn nằm trên trái đất */
+            z-index: 10;
         }
 
         @keyframes rotateGlobe {
@@ -121,23 +142,44 @@
         .p5 { transform: rotateY(240deg) translateZ(320px); }
         .p6 { transform: rotateY(300deg) translateZ(320px); }
 
+        #birthdayInput::placeholder {
+            text-align: center;
+            width: 100%;
+        }
+        .top-left-text {
+        position: fixed;
+        top: 20px;       /* Cách mép trên 20px */
+        left: 20px;      /* Cách mép trái 20px */
+        color: white;    /* Màu chữ */
+        font-size: 24px; /* Kích thước chữ */
+        font-weight: bold;
+        z-index: 9999;   /* Luôn nằm trên cùng */
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Đổ bóng để dễ đọc trên nền ảnh */
+        pointer-events: none; /* Không làm vướng khi click chuột */
+        font-family: 'Segoe UI', Arial, sans-serif;
+}
     </style>
 </head>
 <body>
+    <div class="top-left-text">Mãi yêu Bảo Thy Hết cuộc đời❤️</div>
 
     <canvas id="heartCanvas"></canvas>
 
     <div id="music-overlay">
         <div class="overlay-card">
-            <h2>Chào cậu! ❤️</h2>
-            <p>Nghe một chút nhạc "Chạnh Lòng Thương Cô" nhé?</p>
-            <button class="btn-music btn-yes" onclick="startEverything(true)">Nghe luôn</button>
-            <button class="btn-music btn-no" onclick="startEverything(false)">Không nhạc</button>
+            <h2>Xác nhận danh tính ❤️</h2>
+            <p>Nhập đúng ngày sinh của cậu để mở khóa món quà này nhé!</p>
+            
+            <input type="text" id="birthdayInput" placeholder="Hãy nhập ngày sinh của bạn" maxlength="10">
+            <div id="error-msg">Ngày sinh chưa đúng rồi, thử lại nhé!</div>
+            
+            <button class="btn-music btn-yes" onclick="checkAccess()">Vào xem ngay</button>
         </div>
     </div>
 
     <div class="globe-container" id="globe">
-        <div class="earth"></div>
+        <div class="main-heart">❤️</div>
+        
         <img src="anh1.jpg" class="photo p1">
         <img src="anh2.jpg" class="photo p2">
         <img src="anh3.jpg" class="photo p3">
@@ -149,6 +191,33 @@
     <audio id="myAudio"></audio>
 
     <script>
+        const targetDate = "17/04/2010"; 
+
+        function checkAccess() {
+            const userInput = document.getElementById('birthdayInput').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            if (userInput === targetDate) {
+                startEverything(true);
+            } else {
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Ngày sinh chưa đúng (VD: " + targetDate + ")";
+                document.querySelector('.overlay-card').animate([
+                    { transform: 'translateX(0px)' },
+                    { transform: 'translateX(-10px)' },
+                    { transform: 'translateX(10px)' },
+                    { transform: 'translateX(0px)' }
+                ], { duration: 300 });
+            }
+        }
+
+        document.getElementById('birthdayInput').addEventListener('input', function (e) {
+            let v = this.value.replace(/\D/g, '').slice(0, 8);
+            if (v.length >= 5) v = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+            else if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+            this.value = v;
+        });
+
         const playlist = ["nhac1.mp3"];
         let currentSongIndex = 0;
         const audio = document.getElementById('myAudio');
